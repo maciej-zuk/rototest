@@ -1,0 +1,103 @@
+<!DOCTYPE html5>
+<html>
+<head>
+	<title></title>
+	<style>
+	body {
+		padding: 0;
+		margin: 0;
+	}
+	#canvas {
+
+	}
+	</style>
+	<script src="jquery-2.1.3.min.js"></script>	
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script src="touch-emulator.js"></script>
+<script> TouchEmulator(); </script>
+<script src="hammer.min.js"></script>
+
+<script>
+$(document).ready(function(){
+	var img = new Image();
+
+	var canvas = $("#canvas");
+	var width = $(window).width();
+	var height = $(window).height();
+	canvas.attr('width', width);
+	canvas.attr('height', height);
+	var ctx = canvas[0].getContext('2d');
+
+	var transOrigin = {x: 0, y: 0};
+
+	var translation = {x: 0, y: 0};	
+	var scale = 1;
+	var rotate = 0;
+
+	var redraw = function(){
+		ctx.setTransform(1,0,0,1,0,0);
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, width, height);
+		ctx.translate(transOrigin.x, transOrigin.y);
+		ctx.scale(scale, scale);
+		ctx.rotate(rotate);
+		ctx.translate(translation.x, translation.y);
+		for(var y=-50;y<50;y++){
+			for(var x=-50;x<50;x++){
+				ctx.drawImage(img, img.width*x, img.height*y);
+			}
+		}
+	};
+
+	var mc = new Hammer(canvas[0]);
+	mc.get('pinch').set({enable: true});
+	mc.get('rotate').set({enable: true});
+
+	var panStartXY;
+	var pinchStart;
+	var rotateStart;
+	mc.on("panstart", function(e){
+		panStartXY = {x: translation.x, y: translation.y};
+	});
+	mc.on('pan', function(e){		
+		var cRot = Math.cos(-rotate);
+		var sRot = Math.sin(-rotate);
+		translation.x = panStartXY.x+cRot*e.deltaX/scale-sRot*e.deltaY/scale;
+		translation.y = panStartXY.y+sRot*e.deltaX/scale+cRot*e.deltaY/scale;
+		redraw();
+	});
+
+	mc.on('pinchstart', function(e){
+		pinchStart = scale;
+	});
+	mc.on('pinchin', function(e){
+		transOrigin = e.center;
+		scale = pinchStart*e.scale;
+		redraw();
+	});
+	mc.on('pinchout', function(e){
+		transOrigin = e.center;
+		scale = pinchStart*e.scale;
+		redraw();
+	});
+	
+	mc.on('rotatestart', function(){
+		rotateStart = rotate;
+	});
+	mc.on('rotatemove', function(e){
+		rotate = rotateStart + e.rotation*Math.PI/180;
+	});
+
+	
+	img.onload=redraw;
+	img.src='lena.png';
+
+});
+</script>
+
+</body>
+</html>
