@@ -38,7 +38,7 @@ $(document).ready(function(){
 	var scale = 1;
 	var rotate = 0;
 
-	var redraw = function(){
+	var redrawInner = function(){
 		ctx.setTransform(1,0,0,1,0,0);
 		ctx.fillStyle = "black";
 		ctx.fillRect(0, 0, width, height);
@@ -51,6 +51,15 @@ $(document).ready(function(){
 				ctx.drawImage(img, img.width*x, img.height*y);
 			}
 		}
+	};
+
+
+	var raf;
+	var redraw = function(){
+		if(raf){
+			cancelAnimationFrame(raf);
+		}
+		raf=requestAnimationFrame(redrawInner);
 	};
 
 	var mc = new Hammer(canvas[0]);
