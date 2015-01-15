@@ -11,7 +11,7 @@
 
 	}
 	</style>
-	<script src="jquery-2.1.3.min.js"></script>	
+	<script src="jquery-2.1.3.min.js"></script>
 </head>
 <body>
 
@@ -26,15 +26,15 @@ $(document).ready(function(){
 	var img = new Image();
 
 	var canvas = $("#canvas");
-	var width = $(window).width();
-	var height = $(window).height();
+	var width = 1024;
+	var height = 1024;
 	canvas.attr('width', width);
 	canvas.attr('height', height);
 	var ctx = canvas[0].getContext('2d');
 
 	var transOrigin = {x: 0, y: 0};
 
-	var translation = {x: 0, y: 0};	
+	var translation = {x: 0, y: 0};
 	var scale = 1;
 	var rotate = 0;
 
@@ -72,7 +72,7 @@ $(document).ready(function(){
 	mc.on("panstart", function(e){
 		panStartXY = {x: translation.x, y: translation.y};
 	});
-	mc.on('pan', function(e){		
+	mc.on('pan', function(e){
 		var cRot = Math.cos(-rotate);
 		var sRot = Math.sin(-rotate);
 		translation.x = panStartXY.x+cRot*e.deltaX/scale-sRot*e.deltaY/scale;
@@ -93,7 +93,7 @@ $(document).ready(function(){
 		scale = pinchStart*e.scale;
 		redraw();
 	});
-	
+
 	mc.on('rotatestart', function(){
 		rotateStart = rotate;
 	});
@@ -101,7 +101,7 @@ $(document).ready(function(){
 		rotate = rotateStart + e.rotation*Math.PI/180;
 	});
 
-	
+
 	img.onload=redraw;
 	img.src='lena.png';
 
